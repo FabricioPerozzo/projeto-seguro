@@ -1,6 +1,6 @@
 # Projeto Seguro
 
-Sistema de autenticacao de usuarios desenvolvido como trabalho academico com foco em seguranca de software.
+Sistema de autenticacao de usuarios com TODO List privada, desenvolvido como trabalho academico com foco em seguranca de software.
 
 ## Tecnologias
 
@@ -9,6 +9,7 @@ Sistema de autenticacao de usuarios desenvolvido como trabalho academico com foc
 - SQLite3
 - bcrypt
 - express-session
+- helmet
 - dotenv
 
 ## Pre-requisitos
@@ -73,12 +74,6 @@ Crie as tabelas no banco:
 npm run migrate
 ```
 
-(Opcional) Insira dados de teste:
-
-```bash
-npm run seed
-```
-
 Inicie o servidor:
 
 ```bash
@@ -110,15 +105,20 @@ O sistema estara disponivel em `http://localhost:3001`.
 ```
 projeto-seguro/
   db/
-    connection.js   - Conexao com o banco SQLite
-    migrate.js      - Criacao das tabelas
-    seed.js         - Dados de teste
+    connection.js    - Conexao com o banco SQLite
+    migrate.js       - Criacao das tabelas
+    seed.js          - Dados de teste
   public/
-    style.css       - Estilos da aplicacao
+    style.css        - Estilos da aplicacao
+    login.js         - Script da pagina de login
+    register.js      - Script da pagina de cadastro
+    dashboard.js     - Script da dashboard
   views/
-    login.html      - Pagina de login
-    register.html   - Pagina de cadastro
-    dashboard.html  - Area protegida
-  server.js         - Servidor Express e rotas
-  .env.example      - Template de variaveis de ambiente
+    login.html       - Pagina de login
+    register.html    - Pagina de cadastro
+    dashboard.html   - Area protegida (TODO List)
+  server.js          - Servidor Express e rotas
+  .env.example       - Template de variaveis de ambiente
+  requisitos.md      - Requisitos da aplicacao
+  seguranca.md       - Documentacao de seguranca
 ```

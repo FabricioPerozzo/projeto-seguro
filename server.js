@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
+const helmet = require('helmet');
 const db = require('./db/connection');
 
 const app = express();
@@ -18,6 +19,7 @@ if (!SESSION_SECRET) {
     process.exit(1);
 }
 
+app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
@@ -62,6 +64,14 @@ app.get('/dashboard', auth, (req, res) => {
 
 app.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
+
+    if (!username || username.length > 30) {
+        return res.redirect('/register?erro=username');
+    }
+
+    if (!email || email.length > 100 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return res.redirect('/register?erro=email');
+    }
 
     const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{6,}$/;
     if (!password || !passwordRegex.test(password)) {
@@ -109,7 +119,7 @@ app.get('/user', auth, (req, res) => {
     res.json(req.session.user);
 });
 
-app.get('/logout', (req, res) => {
+app.post('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
