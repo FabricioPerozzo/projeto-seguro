@@ -36,16 +36,22 @@ app.use(
 
 function auth(req, res, next) {
     if (!req.session.user) {
-        return res.redirect('/');
+        return res.redirect('/?erro=auth');
     }
     next();
 }
 
 app.get('/', (req, res) => {
+    if (req.session.user) {
+        return res.redirect('/dashboard');
+    }
     res.sendFile(path.join(__dirname, 'views/login.html'));
 });
 
 app.get('/register', (req, res) => {
+    if (req.session.user) {
+        return res.redirect('/dashboard');
+    }
     res.sendFile(path.join(__dirname, 'views/register.html'));
 });
 
@@ -56,8 +62,9 @@ app.get('/dashboard', auth, (req, res) => {
 app.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
 
-    if (!password || password.length < 6) {
-        return res.send('Senha deve ter no mínimo 6 caracteres');
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[^A-Za-z0-9]).{6,}$/;
+    if (!password || !passwordRegex.test(password)) {
+        return res.redirect('/register?erro=senha');
     }
 
     const hash = await bcrypt.hash(password, BCRYPT_SALT_ROUNDS);
@@ -67,9 +74,9 @@ app.post('/register', async (req, res) => {
         [username, email, hash],
         (err) => {
             if (err) {
-                return res.send('Usuário ou email já existe');
+                return res.redirect('/register?erro=duplicado');
             }
-            res.redirect('/');
+            res.redirect('/?sucesso=1');
         }
     );
 });
@@ -79,12 +86,12 @@ app.post('/login', (req, res) => {
 
     db.get('SELECT * FROM users WHERE username = ?', [username], async (err, user) => {
         if (!user) {
-            return res.redirect('/?erro=usuario');
+            return res.redirect('/?erro=credenciais');
         }
 
         const valid = await bcrypt.compare(password, user.password);
         if (!valid) {
-            return res.send('Senha incorreta');
+            return res.redirect('/?erro=credenciais');
         }
 
         req.session.user = {

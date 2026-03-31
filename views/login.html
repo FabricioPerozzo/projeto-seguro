@@ -1,20 +1,57 @@
 <!doctype html>
-<html>
+<html lang="pt-BR">
     <head>
         <title>Login</title>
         <link rel="stylesheet" href="/style.css" />
+        <style>
+            .error-msg {
+                color: #e74c3c;
+                font-size: 13px;
+                margin: 8px 0;
+                display: none;
+            }
+            .success-msg {
+                color: #2ecc71;
+                font-size: 13px;
+                margin: 8px 0;
+                display: none;
+            }
+        </style>
     </head>
     <body>
         <div class="container">
             <h2>Login</h2>
 
+            <p class="error-msg" id="errorMsg"></p>
+            <p class="success-msg" id="successMsg"></p>
+
             <form action="/login" method="POST">
-                <input type="text" name="username" placeholder="Usuário" required />
+                <input type="text" name="username" placeholder="Usuario" required />
                 <input type="password" name="password" placeholder="Senha" required />
                 <button>Entrar</button>
             </form>
 
             <a href="/register">Criar conta</a>
         </div>
+
+        <script>
+            const params = new URLSearchParams(window.location.search);
+            const erro = params.get('erro');
+            const sucesso = params.get('sucesso');
+            if (erro) {
+                const msg = document.getElementById('errorMsg');
+                const mensagens = {
+                    credenciais: 'Usuario ou senha invalidos',
+                    auth: 'Faca login para continuar'
+                };
+                msg.textContent = mensagens[erro] || 'Erro ao fazer login';
+                msg.style.display = 'block';
+            }
+            if (sucesso) {
+                const msg = document.getElementById('successMsg');
+                msg.textContent = 'Conta criada com sucesso, faca login';
+                msg.style.display = 'block';
+            }
+        </script>
     </body>
 </html>

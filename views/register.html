@@ -1,21 +1,122 @@
 <!doctype html>
-<html>
+<html lang="pt-BR">
     <head>
         <title>Cadastro</title>
         <link rel="stylesheet" href="/style.css" />
+        <style>
+            .rules {
+                text-align: left;
+                margin: 8px 0;
+                padding: 0;
+                list-style: none;
+                font-size: 13px;
+            }
+            .rules li {
+                padding: 2px 0;
+                color: #999;
+                transition: color 0.2s;
+            }
+            .rules li.valid {
+                color: #2ecc71;
+            }
+            .rules li::before {
+                content: '✕ ';
+            }
+            .rules li.valid::before {
+                content: '✓ ';
+            }
+            .match-error {
+                color: #e74c3c;
+                font-size: 13px;
+                margin: 4px 0;
+                display: none;
+            }
+            .error-msg,
+            .success-msg {
+                font-size: 13px;
+                margin: 8px 0;
+                display: none;
+            }
+            .error-msg {
+                color: #e74c3c;
+            }
+            .success-msg {
+                color: #2ecc71;
+            }
+        </style>
     </head>
     <body>
         <div class="container">
             <h2>Cadastro</h2>
 
-            <form action="/register" method="POST">
-                <input type="text" name="username" placeholder="Usuário" required />
+            <p class="error-msg" id="errorMsg"></p>
+
+            <form id="registerForm" action="/register" method="POST">
+                <input type="text" name="username" placeholder="Usuario" required />
                 <input type="email" name="email" placeholder="Email" required />
-                <input type="password" name="password" placeholder="Senha (mín 6)" required />
-                <button>Cadastrar</button>
+                <input type="password" name="password" id="password" placeholder="Senha" required />
+                <ul class="rules">
+                    <li id="rule-length">Minimo 6 caracteres</li>
+                    <li id="rule-upper">Pelo menos 1 letra maiuscula</li>
+                    <li id="rule-number">Pelo menos 1 numero</li>
+                    <li id="rule-special">Pelo menos 1 caractere especial</li>
+                </ul>
+                <input type="password" id="confirmPassword" placeholder="Repetir senha" required />
+                <p class="match-error" id="matchError">As senhas nao coincidem</p>
+                <button type="submit">Cadastrar</button>
             </form>
 
             <a href="/">Voltar</a>
         </div>
+
+        <script>
+            const pw = document.getElementById('password');
+            const confirm = document.getElementById('confirmPassword');
+            const matchError = document.getElementById('matchError');
+            const form = document.getElementById('registerForm');
+
+            const rules = {
+                'rule-length': (v) => v.length >= 6,
+                'rule-upper': (v) => /[A-Z]/.test(v),
+                'rule-number': (v) => /[0-9]/.test(v),
+                'rule-special': (v) => /[^A-Za-z0-9]/.test(v)
+            };
+
+            pw.addEventListener('input', () => {
+                const val = pw.value;
+                for (const [id, test] of Object.entries(rules)) {
+                    document.getElementById(id).classList.toggle('valid', test(val));
+                }
+                if (confirm.value) {
+                    matchError.style.display = val !== confirm.value ? 'block' : 'none';
+                }
+            });
+
+            confirm.addEventListener('input', () => {
+                matchError.style.display = pw.value !== confirm.value ? 'block' : 'none';
+            });
+
+            form.addEventListener('submit', (e) => {
+                const val = pw.value;
+                const allValid = Object.values(rules).every((test) => test(val));
+                if (!allValid || pw.value !== confirm.value) {
+                    e.preventDefault();
+                    if (!allValid) alert('A senha nao atende todos os requisitos');
+                    else alert('As senhas nao coincidem');
+                }
+            });
+
+            const params = new URLSearchParams(window.location.search);
+            const erro = params.get('erro');
+            if (erro) {
+                const msg = document.getElementById('errorMsg');
+                const mensagens = {
+                    senha: 'A senha nao atende os requisitos de seguranca',
+                    duplicado: 'Usuario ou email ja cadastrado'
+                };
+                msg.textContent = mensagens[erro] || 'Erro ao cadastrar';
+                msg.style.display = 'block';
+            }
+        </script>
     </body>
 </html>
