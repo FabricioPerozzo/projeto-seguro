@@ -30,8 +30,11 @@ async function seed() {
 
     setTimeout(() => {
         db.close((err) => {
-            if (err) console.error('Erro ao fechar banco:', err.message);
-            else console.log('Seed finalizado');
+            if (err) {
+                console.error('Erro ao fechar banco:', err.message);
+            } else {
+                console.log('Seed finalizado');
+            }
         });
     }, 1000);
 }

@@ -29,6 +29,9 @@ migrations.forEach(({ name, sql }) => {
 });
 
 db.close((err) => {
-    if (err) console.error('Erro ao fechar banco:', err.message);
-    else console.log('Migrations finalizadas');
+    if (err) {
+        console.error('Erro ao fechar banco:', err.message);
+    } else {
+        console.log('Migrations finalizadas');
+    }
 });

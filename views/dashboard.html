@@ -1,28 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="/style.css">
-</head>
-<body>
+    <head>
+        <title>Dashboard</title>
+        <link rel="stylesheet" href="/style.css" />
+    </head>
+    <body>
+        <div class="container">
+            <h2 id="titulo"></h2>
+            <p id="email"></p>
 
-<div class="container">
-    <h2 id="titulo"></h2>
-    <p id="email"></p>
+            <p>Área protegida</p>
 
-    <p>Área protegida </p>
+            <a href="/logout">Sair</a>
+        </div>
 
-    <a href="/logout">Sair</a>
-</div>
-
-<script>
-fetch('/user')
-.then(res => res.json())
-.then(data => {
-    document.getElementById('titulo').innerText = "Bem-vindo, " + data.username;
-    document.getElementById('email').innerText = "Email: " + data.email;
-});
-</script>
-
-</body>
+        <script>
+            fetch('/user')
+                .then((res) => res.json())
+                .then((data) => {
+                    document.getElementById('titulo').innerText = 'Bem-vindo, ' + data.username;
+                    document.getElementById('email').innerText = 'Email: ' + data.email;
+                });
+        </script>
+    </body>
 </html>
