@@ -1,26 +1,157 @@
 <!doctype html>
-<html>
+<html lang="pt-BR">
     <head>
         <title>Dashboard</title>
         <link rel="stylesheet" href="/style.css" />
+        <style>
+            .container {
+                width: 400px;
+            }
+            .todo-form {
+                display: flex;
+                gap: 8px;
+                margin: 16px 0;
+            }
+            .todo-form input {
+                flex: 1;
+                margin: 0;
+            }
+            .todo-form button {
+                width: auto;
+                padding: 10px 16px;
+            }
+            .todo-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+                text-align: left;
+            }
+            .todo-item {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 0;
+                border-bottom: 1px solid #eee;
+            }
+            .todo-item.done span {
+                text-decoration: line-through;
+                color: #999;
+            }
+            .todo-item span {
+                flex: 1;
+                word-break: break-word;
+            }
+            .todo-item input[type='checkbox'] {
+                width: auto;
+                margin: 0;
+            }
+            .btn-delete {
+                background: none;
+                border: none;
+                color: #e74c3c;
+                cursor: pointer;
+                font-size: 16px;
+                padding: 0 4px;
+                width: auto;
+            }
+            .empty {
+                color: #999;
+                font-size: 14px;
+                margin: 16px 0;
+            }
+        </style>
     </head>
     <body>
         <div class="container">
             <h2 id="titulo"></h2>
             <p id="email"></p>
 
-            <p>Área protegida</p>
+            <div class="todo-form">
+                <input type="text" id="todoInput" placeholder="Nova tarefa" />
+                <button onclick="addTodo()">+</button>
+            </div>
+
+            <ul class="todo-list" id="todoList"></ul>
+            <p class="empty" id="emptyMsg">Nenhuma tarefa</p>
 
             <a href="/logout">Sair</a>
         </div>
 
         <script>
+            const todoList = document.getElementById('todoList');
+            const todoInput = document.getElementById('todoInput');
+            const emptyMsg = document.getElementById('emptyMsg');
+
             fetch('/user')
-                .then((res) => res.json())
+                .then((r) => r.json())
                 .then((data) => {
                     document.getElementById('titulo').innerText = 'Bem-vindo, ' + data.username;
                     document.getElementById('email').innerText = 'Email: ' + data.email;
                 });
+
+            function renderTodos(todos) {
+                todoList.innerHTML = '';
+                emptyMsg.style.display = todos.length ? 'none' : 'block';
+                todos.forEach((todo) => {
+                    const li = document.createElement('li');
+                    li.className = 'todo-item' + (todo.done ? ' done' : '');
+
+                    const cb = document.createElement('input');
+                    cb.type = 'checkbox';
+                    cb.checked = !!todo.done;
+                    cb.onchange = () => toggleTodo(todo.id, !todo.done);
+
+                    const span = document.createElement('span');
+                    span.textContent = todo.title;
+
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-delete';
+                    btn.textContent = 'x';
+                    btn.onclick = () => deleteTodo(todo.id);
+
+                    li.appendChild(cb);
+                    li.appendChild(span);
+                    li.appendChild(btn);
+                    todoList.appendChild(li);
+                });
+            }
+
+            function loadTodos() {
+                fetch('/api/todos')
+                    .then((r) => r.json())
+                    .then(renderTodos);
+            }
+
+            function addTodo() {
+                const title = todoInput.value.trim();
+                if (!title) return;
+                fetch('/api/todos', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title })
+                }).then(() => {
+                    todoInput.value = '';
+                    loadTodos();
+                });
+            }
+
+            function toggleTodo(id, done) {
+                fetch('/api/todos/' + id, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ done })
+                }).then(() => loadTodos());
+            }
+
+            function deleteTodo(id) {
+                fetch('/api/todos/' + id, { method: 'DELETE' }).then(() => loadTodos());
+            }
+
+            todoInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') addTodo();
+            });
+
+            loadTodos();
         </script>
     </body>
 </html>

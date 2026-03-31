@@ -19,6 +19,7 @@ if (!SESSION_SECRET) {
 }
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static('public'));
 
 app.use(
@@ -94,8 +95,8 @@ app.post('/login', (req, res) => {
             return res.redirect('/?erro=credenciais');
         }
 
+        req.session.userId = user.id;
         req.session.user = {
-            id: user.id,
             username: user.username,
             email: user.email
         };
@@ -111,6 +112,76 @@ app.get('/user', auth, (req, res) => {
 app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
+});
+
+function authApi(req, res, next) {
+    if (!req.session.user) {
+        return res.status(401).json({ error: 'Nao autenticado' });
+    }
+    next();
+}
+
+app.get('/api/todos', authApi, (req, res) => {
+    db.all(
+        'SELECT id, title, done FROM todos WHERE user_id = ? ORDER BY created_at DESC',
+        [req.session.userId],
+        (err, rows) => {
+            if (err) {
+                return res.status(500).json({ error: 'Erro ao buscar tarefas' });
+            }
+            res.json(rows);
+        }
+    );
+});
+
+app.post('/api/todos', authApi, (req, res) => {
+    const { title } = req.body;
+    if (!title || !title.trim()) {
+        return res.status(400).json({ error: 'Titulo obrigatorio' });
+    }
+    db.run(
+        'INSERT INTO todos (user_id, title) VALUES (?, ?)',
+        [req.session.userId, title.trim()],
+        function (err) {
+            if (err) {
+                return res.status(500).json({ error: 'Erro ao criar tarefa' });
+            }
+            res.json({ id: this.lastID, title: title.trim(), done: 0 });
+        }
+    );
+});
+
+app.put('/api/todos/:id', authApi, (req, res) => {
+    const { done } = req.body;
+    db.run(
+        'UPDATE todos SET done = ? WHERE id = ? AND user_id = ?',
+        [done ? 1 : 0, req.params.id, req.session.userId],
+        function (err) {
+            if (err) {
+                return res.status(500).json({ error: 'Erro ao atualizar tarefa' });
+            }
+            if (this.changes === 0) {
+                return res.status(404).json({ error: 'Tarefa nao encontrada' });
+            }
+            res.json({ ok: true });
+        }
+    );
+});
+
+app.delete('/api/todos/:id', authApi, (req, res) => {
+    db.run(
+        'DELETE FROM todos WHERE id = ? AND user_id = ?',
+        [req.params.id, req.session.userId],
+        function (err) {
+            if (err) {
+                return res.status(500).json({ error: 'Erro ao remover tarefa' });
+            }
+            if (this.changes === 0) {
+                return res.status(404).json({ error: 'Tarefa nao encontrada' });
+            }
+            res.json({ ok: true });
+        }
+    );
 });
 
 app.listen(PORT, () => {

@@ -13,6 +13,19 @@ const migrations = [
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )
         `
+    },
+    {
+        name: 'create_todos_table',
+        sql: `
+            CREATE TABLE IF NOT EXISTS todos (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                title TEXT NOT NULL,
+                done INTEGER DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            )
+        `
     }
 ];
 
