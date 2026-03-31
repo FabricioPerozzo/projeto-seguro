@@ -66,6 +66,8 @@ Segredos como `SESSION_SECRET` ficam no arquivo `.env`, que esta no `.gitignore`
 
 ### Banco de dados
 
+O SQLite foi escolhido para simplificar o ambiente academico, eliminando a necessidade de instalar e configurar um servidor de banco de dados. Em uma aplicacao real, deve-se utilizar um banco isolado (como PostgreSQL) em um servidor dedicado, sem exposicao direta a internet, acessivel apenas pela aplicacao via rede interna.
+
 - Foreign keys habilitadas (`PRAGMA foreign_keys=ON`): garante integridade referencial
 - WAL mode: reduz risco de corrupcao do banco em caso de falha
 

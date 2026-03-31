@@ -44,7 +44,7 @@ Sistema web de gerenciamento de tarefas (TODO List) com autenticacao de usuarios
 ## Requisitos Nao Funcionais
 
 - RNF01: Aplicacao roda em Node.js com Express
-- RNF02: Banco de dados SQLite local
+- RNF02: Banco de dados SQLite local (escolhido para simplificar o ambiente academico; em producao, utilizar um banco isolado como PostgreSQL, sem exposicao direta a internet)
 - RNF03: Configuracao via variaveis de ambiente (dotenv)
 - RNF04: Scripts de migration e seed separados
 - RNF05: Linting e formatacao automatica com ESLint e Prettier
