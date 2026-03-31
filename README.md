@@ -2,6 +2,12 @@
 
 Sistema de autenticacao de usuarios com TODO List privada, desenvolvido como trabalho academico com foco em seguranca de software.
 
+## Documentacao
+
+- [Requisitos da aplicacao](requisitos.md)
+- [Seguranca da aplicacao](seguranca.md)
+- [Debitos tecnicos](debitos-tecnicos.md)
+
 ## Tecnologias
 
 - Node.js
@@ -72,6 +78,12 @@ Crie as tabelas no banco:
 
 ```bash
 npm run migrate
+```
+
+(Opcional) Insira dados de teste:
+
+```bash
+npm run seed
 ```
 
 Inicie o servidor:
