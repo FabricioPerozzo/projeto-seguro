@@ -1,8 +1,17 @@
 const prettier = require('eslint-plugin-prettier');
+const globals = require('globals');
 
 module.exports = [
     {
         ignores: ['node_modules/**', 'package.json', 'package-lock.json']
+    },
+    {
+        files: ['public/**/*.js'],
+        languageOptions: {
+            globals: {
+                ...globals.browser
+            }
+        }
     },
     {
         files: ['**/*.js'],

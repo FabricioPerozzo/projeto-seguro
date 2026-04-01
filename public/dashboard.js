@@ -44,7 +44,9 @@ function loadTodos() {
 
 function addTodo() {
     const title = todoInput.value.trim();
-    if (!title) return;
+    if (!title) {
+        return;
+    }
     fetch('/api/todos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -70,7 +72,9 @@ function deleteTodo(id) {
 document.getElementById('addBtn').addEventListener('click', addTodo);
 
 todoInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') addTodo();
+    if (e.key === 'Enter') {
+        addTodo();
+    }
 });
 
 loadTodos();

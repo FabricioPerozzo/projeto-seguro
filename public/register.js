@@ -29,8 +29,11 @@ form.addEventListener('submit', (e) => {
     const allValid = Object.values(rules).every((test) => test(val));
     if (!allValid || pw.value !== confirm.value) {
         e.preventDefault();
-        if (!allValid) alert('A senha nao atende todos os requisitos');
-        else alert('As senhas nao coincidem');
+        if (!allValid) {
+            alert('A senha nao atende todos os requisitos');
+        } else {
+            alert('As senhas nao coincidem');
+        }
     }
 });
 
