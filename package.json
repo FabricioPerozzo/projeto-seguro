@@ -5,7 +5,7 @@
     "main": "server.js",
     "scripts": {
         "start": "node server.js",
-        "dev": "yarn lint:format && yarn migrate && yarn seed && nodemon server.js",
+        "dev": "npm run lint:format && npm run migrate && npm run seed && nodemon server.js",
         "migrate": "node db/migrate.js",
         "seed": "node db/seed.js",
         "lint": "eslint .",
